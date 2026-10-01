@@ -2,8 +2,6 @@ name: Android Build & Release
 
 on:
   push:
-    branches: [ "main", "master" ]
-    tags: [ "v*" ]
   workflow_dispatch:
 
 jobs:
@@ -22,45 +20,15 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Grant execute permission for gradlew
+      - name: Build debug and release APK
         run: |
-          if [ -f gradlew ]; then chmod +x gradlew; fi
+          chmod +x gradlew
+          ./gradlew assembleDebug assembleRelease --no-daemon
 
-      - name: Build debug APK
-        run: |
-          if [ -f gradlew ]; then
-            ./gradlew assembleDebug --no-daemon
-          else
-            gradle assembleDebug --no-daemon
-          fi
-
-      - name: Upload APK artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-
-      - name: Build release APK (unsigned)
-        run: |
-          if [ -f gradlew ]; then
-            ./gradlew assembleRelease --no-daemon
-          else
-            gradle assembleRelease --no-daemon
-          fi
-
-      - name: Upload release APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: app/build/outputs/apk/release/*.apk
-
-      - name: Publish GitHub Release on tag
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
+          name: app-apks
+          path: |
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/release/*.apk
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
