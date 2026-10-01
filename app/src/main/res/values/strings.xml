@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Casttttv</string>
+    <string name="hello_message">سلام از Casttttv</string>
+    <string name="clicked_message">دکمه زده شد ✅</string>
+    <string name="button_label">بزن</string>
+</resources>
